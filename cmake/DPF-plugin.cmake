@@ -40,6 +40,14 @@
 
 include(CMakeParseArguments)
 
+if(NOT DEFINED DPF_LV2_OUTPUT_DIRECTORY)
+  set(DPF_LV2_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+endif()
+
+if(NOT DEFINED DPF_VST3_OUTPUT_DIRECTORY)
+  set(DPF_VST3_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+endif()
+
 # ------------------------------------------------------------------------------
 # DPF public functions
 # ------------------------------------------------------------------------------
@@ -577,14 +585,14 @@ function(dpf__build_lv2 NAME HAS_UI MONOLITHIC EXTRA_UI_LINK_OPTS)
   endif()
   target_link_libraries("${NAME}-lv2" PRIVATE "${NAME}-dsp")
   set_target_properties("${NAME}-lv2" PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin/${NAME}.lv2/$<0:>"
+    LIBRARY_OUTPUT_DIRECTORY "${DPF_LV2_OUTPUT_DIRECTORY}/${NAME}.lv2/$<0:>"
     ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/obj/lv2/$<0:>"
     OUTPUT_NAME "${NAME}_dsp"
     PREFIX "")
 
   # helper property for custom outside handling
   set_target_properties("${NAME}" PROPERTIES
-    LV2_BUNDLE "${PROJECT_BINARY_DIR}/bin/${NAME}.lv2")
+    LV2_BUNDLE "${DPF_LV2_OUTPUT_DIRECTORY}/${NAME}.lv2")
 
   if(HAS_UI)
     if(MONOLITHIC)
@@ -600,7 +608,7 @@ function(dpf__build_lv2 NAME HAS_UI MONOLITHIC EXTRA_UI_LINK_OPTS)
       target_link_options("${NAME}-lv2-ui" PRIVATE "${EXTRA_UI_LINK_OPTS}")
       target_link_libraries("${NAME}-lv2-ui" PRIVATE "${NAME}-ui")
       set_target_properties("${NAME}-lv2-ui" PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin/${NAME}.lv2/$<0:>"
+        LIBRARY_OUTPUT_DIRECTORY "${DPF_LV2_OUTPUT_DIRECTORY}/${NAME}.lv2/$<0:>"
         ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/obj/lv2/$<0:>"
         OUTPUT_NAME "${NAME}_ui"
         PREFIX "")
@@ -617,7 +625,7 @@ function(dpf__build_lv2 NAME HAS_UI MONOLITHIC EXTRA_UI_LINK_OPTS)
     ${CMAKE_CROSSCOMPILING_EMULATOR}
     "$<TARGET_FILE:lv2_ttl_generator>"
     "$<TARGET_FILE:${NAME}-lv2>"
-    WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/bin/${NAME}.lv2")
+    WORKING_DIRECTORY "${DPF_LV2_OUTPUT_DIRECTORY}/${NAME}.lv2")
 endfunction()
 
 # dpf__build_vst2
@@ -727,23 +735,23 @@ function(dpf__build_vst3 NAME HAS_UI EXTRA_UI_LINK_OPTS)
 
   if(APPLE)
     set_target_properties("${NAME}-vst3" PROPERTIES
-      LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin/${NAME}.vst3/Contents/MacOS/$<0:>"
+      LIBRARY_OUTPUT_DIRECTORY "${DPF_VST3_OUTPUT_DIRECTORY}/${NAME}.vst3/Contents/MacOS/$<0:>"
       SUFFIX "")
   elseif(WIN32)
     set_target_properties("${NAME}-vst3" PROPERTIES
-      LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin/${NAME}.vst3/Contents/${vst3_arch}-win/$<0:>" SUFFIX ".vst3")
+      LIBRARY_OUTPUT_DIRECTORY "${DPF_VST3_OUTPUT_DIRECTORY}/${NAME}.vst3/Contents/${vst3_arch}-win/$<0:>" SUFFIX ".vst3")
   else()
     set_target_properties("${NAME}-vst3" PROPERTIES
-      LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin/${NAME}.vst3/Contents/${vst3_arch}-linux/$<0:>")
+      LIBRARY_OUTPUT_DIRECTORY "${DPF_VST3_OUTPUT_DIRECTORY}/${NAME}.vst3/Contents/${vst3_arch}-linux/$<0:>")
   endif()
 
   if(APPLE)
     # Uses the same macOS bundle template as VST2
     set(INFO_PLIST_PROJECT_NAME "${NAME}")
     configure_file("${DPF_ROOT_DIR}/utils/plugin.bundle/Contents/Info.plist"
-     "${PROJECT_BINARY_DIR}/bin/${NAME}.vst3/Contents/Info.plist" @ONLY)
+     "${DPF_VST3_OUTPUT_DIRECTORY}/${NAME}.vst3/Contents/Info.plist" @ONLY)
     file(COPY "${DPF_ROOT_DIR}/utils/plugin.bundle/Contents/PkgInfo"
-     DESTINATION "${PROJECT_BINARY_DIR}/bin/${NAME}.vst3/Contents")
+     DESTINATION "${DPF_VST3_OUTPUT_DIRECTORY}/${NAME}.vst3/Contents")
   endif()
 endfunction()
 
