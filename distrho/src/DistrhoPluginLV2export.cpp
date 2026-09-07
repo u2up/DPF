@@ -1168,6 +1168,13 @@ void lv2_generate_ttl(const char* const basename)
                 {
                     pluginString += "    doap:license <http://spdx.org/licenses/MIT.html> ;\n\n";
                 }
+                // Non-SPDX proprietary license notices are valid literal metadata.
+                else if (uplicense == "PROPRIETARY" ||
+                         uplicense.startsWith("PROPRIETARY;") ||
+                         uplicense.startsWith("LICENSEREF-PROPRIETARY"))
+                {
+                    pluginString += "    doap:license \"" +  license + "\" ;\n\n";
+                }
 
                 // generic fallbacks
                 else if (uplicense.startsWith("GPL"))

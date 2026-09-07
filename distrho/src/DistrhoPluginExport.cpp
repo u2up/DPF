@@ -255,6 +255,13 @@ int main(int argc, char* argv[])
         {
             license = "http://spdx.org/licenses/MIT.html";
         }
+        // Non-SPDX proprietary license notices are valid literal metadata.
+        else if (uplicense == "PROPRIETARY" ||
+                 uplicense.startsWith("PROPRIETARY;") ||
+                 uplicense.startsWith("LICENSEREF-PROPRIETARY"))
+        {
+            // keep the literal notice for Info.plist copyright metadata
+        }
 
         // generic fallbacks
         else if (uplicense.startsWith("GPL"))
