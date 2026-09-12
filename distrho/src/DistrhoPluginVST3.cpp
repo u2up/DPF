@@ -2880,7 +2880,10 @@ private:
 
     void updateParametersFromProcessing(v3_param_changes** const outparamsptr, const int32_t offset)
     {
-        DISTRHO_SAFE_ASSERT_RETURN(outparamsptr != nullptr,);
+        // VST3 ProcessData::output_params is optional; validators and some hosts
+        // may provide no output parameter queue when they do not consume changes.
+        if (outparamsptr == nullptr)
+            return;
 
         float curValue, defValue;
         double normalized;
